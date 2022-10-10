@@ -10,7 +10,7 @@
 #define START_WAIT_TIME 1500
 #define BASE_DECREASE_FACTOR 5
 #define N_PENALTIES 3
-#define PULSE_SPEED 0.005
+#define PULSE_SPEED 0.02
 
 enum State {WAIT_FOR_INPUT, SLEEP, DISPLAY_PATTERN, INPUT_PATTERN, PENALTY, WAIT_FOR_DISPLAY, GAME_OVER};
 
@@ -37,7 +37,7 @@ void setup() {
   /* Initialize pins */
   for (int i=0; i<4; i++) {
     pinMode(BUTTON(i), INPUT_PULLUP);
-    enableInterrupt(BUTTON(i), buttonInterrupt, CHANGE); // attach interrupt handler to buttons
+    enableInterrupt(BUTTON(i), buttonInterrupt, RISING); // attach interrupt handler to buttons
     pinMode(LED(i), OUTPUT);
   }
 
@@ -150,10 +150,8 @@ void randomizeLeds() {
 void sleep() {
   curState = SLEEP;
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-  sleep_enable();
   sleep_mode();
   // WAIT FOR INTERRUPT
-  sleep_disable();
   waitForInput();  
 }
 
@@ -161,6 +159,7 @@ void sleep() {
 void buttonInterrupt() {}
 
 void waitForInput() {
+  curState = WAIT_FOR_INPUT;
   Serial.println("Welcome to the Catch the Light Pattern Game! Press Key T1 to Start.");
   timer = 10000 + millis();
 
