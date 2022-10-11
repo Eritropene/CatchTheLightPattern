@@ -203,6 +203,7 @@ void startGame() {
 // Wait a random time between 1 and 2 seconds before displaying pattern
 void waitForDisplay() {
   turnOffLeds();
+  guess = 0;
   curState = WAIT_FOR_DISPLAY;
   timer = millis() + 1000 + (random() % 1000);
 }
