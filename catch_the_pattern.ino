@@ -48,10 +48,11 @@ void setup() {
 }
 
 void loop() {
-  /* Update buttons state */
+  // Update buttons 2 -> 4
   for (int i = 1; i < 4; i++) {
     buttonState[i] = !((bool)digitalRead(BUTTON(i)));
   }
+  // Button 1 has a debouncer to prevent instantly starting the game after waking from sleep
   if (buttonState[0] == (bool)digitalRead(BUTTON(0))) {
     button1Debounce = millis();
     buttonState[0] = !((bool)digitalRead(BUTTON(0)));
@@ -59,12 +60,14 @@ void loop() {
   if ((millis() - button1Debounce) > 50) {
     buttonState[0] = !((bool)digitalRead(BUTTON(0)));
   }
+  
+  // This is used to start the game on button T1 press
   if (buttonState[0] && button1State == 0 ) {
-    button1State = 1;
+    button1State = 1; // T1 pressed
   } else if (buttonState[0] && button1State == 1) {
-    button1State = 2;
+    button1State = 2; // T1 held
   } else if (!buttonState[0]) {
-    button1State = 0;
+    button1State = 0; // T1 released
   }
   
   // Change loop behaviour depending on the game state.
@@ -77,8 +80,8 @@ void loop() {
         if (pulse >= 255 || pulse <= 0) pulseDirection *= -1;
         analogWrite(R_LED, (int)pulse);
 
-        // Button T1 check
-        if (buttonState[0]) {
+        // Button T1 pressed
+        if (button1State == 1) {
           startGame();
         }
       } else {
@@ -86,7 +89,7 @@ void loop() {
       }
       break;
     case SLEEP:
-      
+      // Wait for interrupt
       break;
     case DISPLAY_PATTERN:
       // This state lasts for t1 milliseconds and displays the pattern to the player
